@@ -1,32 +1,39 @@
-### **GDK Pixbuf Libraries**
+---
 
-```cpp
-sudo apt purge gir1.2-gdkpixbuf-2.0 \
-                libgdk-pixbuf-2.0-0 \
-                libgdk-pixbuf2.0-bin \
-                libgdk-pixbuf2.0-common
+### 🔥 To Remove Commvault Completely:
+
+#### 1. **Stop all Commvault services**
+
+```bash
+/opt/commvault/Base/cvstop
 ```
 
-### **iputils (ping and tracepath)**
+#### 2. **Verify no Commvault processes are running**
 
-```cpp
-sudo apt purge iputils-ping iputils-tracepath
+```bash
+ps aux | grep commvault
 ```
 
-### Thunderbird
+Should return only the `grep` line.
 
-```cpp
-sudo apt purge thunderbird thunderbird-gnome-support
-```
+#### 3. **Delete Commvault directory**
 
-**Commvault libcurl.so**
-
-```cpp
+```bash
 sudo rm -rf /opt/commvault
 ```
 
-### Cleanup (for all cases)
+#### 4. (Optional) **Clean up leftover service files**
 
-```cpp
-sudo apt autoremove
+```bash
+sudo find /etc/systemd /lib/systemd -name "*commvault*" -exec rm -f {} \;
 ```
+
+---
+
+### 🔁 If You Use It (Which You Haven’t Proven):
+
+Then update it. Leaving **libcurl.so v8.4.0** live = dumb risk.
+
+---
+
+Make a final call. Right now it’s dead weight and a potential exploit vector.
