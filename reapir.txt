@@ -1,0 +1,32 @@
+### **GDK Pixbuf Libraries**
+
+```cpp
+sudo apt purge gir1.2-gdkpixbuf-2.0 \
+                libgdk-pixbuf-2.0-0 \
+                libgdk-pixbuf2.0-bin \
+                libgdk-pixbuf2.0-common
+```
+
+### **iputils (ping and tracepath)**
+
+```cpp
+sudo apt purge iputils-ping iputils-tracepath
+```
+
+### Thunderbird
+
+```cpp
+sudo apt purge thunderbird thunderbird-gnome-support
+```
+
+**Commvault libcurl.so**
+
+```cpp
+sudo rm -rf /opt/commvault
+```
+
+### Cleanup (for all cases)
+
+```cpp
+sudo apt autoremove
+```
