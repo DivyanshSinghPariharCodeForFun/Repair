@@ -19,13 +19,29 @@ server {
     }
 
     # Proxy backend requests (no /api prefix)
-    location ~ ^/(login|logout|register|users|tickets|api|auth|upload|backend) {
+    location ~ ^/(login|logout|register|users|tickets|api|auth|upload|backend|completedReviews|frequency) {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_cache_bypass $http_upgrade;
+
+        # --- CORS Headers ---
+        add_header 'Access-Control-Allow-Origin' 'https://10.91.41.16' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Origin, Content-Type, Accept, Authorization' always;
+
+        # Preflight handling
+        if ($request_method = OPTIONS) {
+            add_header 'Access-Control-Allow-Origin' 'https://10.91.41.16' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Origin, Content-Type, Accept, Authorization' always;
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Length' 0;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            return 204;
+        }
     }
 
     # SPA fallback for React routes
