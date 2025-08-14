@@ -1,0 +1,56 @@
+server {
+    listen 443 ssl;
+    server_name uat-ers.religare.com;
+
+    ssl_certificate /etc/ssl/religare/religare.in.crt;
+    ssl_certificate_key /etc/ssl/religare/religare.in.key;
+
+    # Security header
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+    root /opt/erapp/frontend/build;
+    index index.html;
+
+    # Serve static files directly
+    location /static/ {
+        alias /opt/erapp/frontend/build/static/;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000";
+    }
+
+    # Serve other assets (fonts, images, etc.)
+    location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|ttf|svg|eot|otf|json)$ {
+        root /opt/erapp/frontend/build;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000";
+        try_files $uri =404;
+    }
+
+    # Proxy API and everything else to backend
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+    }
+}
+
+server {
+    listen 80;
+    server_name 10.91.41.16;
+    return 301 https://uat-ers.religare.com$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name 10.91.41.16;
+
+    ssl_certificate /etc/ssl/religare/religare.in.crt;
+    ssl_certificate_key /etc/ssl/religare/religare.in.key;
+
+    return 301 https://uat-ers.religare.com$request_uri;
+}
+
+server {
+    listen 80;
+    server_name uat-ers.religare.com;
+    return 301 https://uat-ers.religare.com$request_uri;
+}
