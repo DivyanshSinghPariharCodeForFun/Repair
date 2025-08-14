@@ -5,7 +5,7 @@ server {
     ssl_certificate /etc/ssl/religare/religare.in.crt;
     ssl_certificate_key /etc/ssl/religare/religare.in.key;
 
-    # HSTS
+    # Security headers
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
 
     root /opt/erapp/frontend/build;
@@ -13,7 +13,7 @@ server {
 
     # Serve static assets
     location /static/ {
-        root /opt/erapp/frontend/build;
+        alias /opt/erapp/frontend/build/static/;
         expires 30d;
         add_header Cache-Control "public, max-age=2592000";
         try_files $uri =404;
