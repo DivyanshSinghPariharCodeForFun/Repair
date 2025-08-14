@@ -7,6 +7,25 @@ server {
 
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
 
+    # Handle CORS for API routes
+    location ~ ^/(login|logout|register|users|tickets|api|auth|upload|backend) {
+        if ($request_method = OPTIONS) {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+            add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            return 204;
+        }
+        add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
     # Frontend location
     root /opt/erapp/frontend/build;
     index index.html;
@@ -18,39 +37,13 @@ server {
         add_header Cache-Control "public, max-age=2592000";
     }
 
-    # Proxy backend requests (no /api prefix)
-    location ~ ^/(login|logout|register|users|tickets|api|auth|upload|backend|completedReviews|frequency) {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-
-        # --- CORS Headers ---
-        add_header 'Access-Control-Allow-Origin' 'https://10.91.41.16' always;
-        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
-        add_header 'Access-Control-Allow-Headers' 'Origin, Content-Type, Accept, Authorization' always;
-
-        # Preflight handling
-        if ($request_method = OPTIONS) {
-            add_header 'Access-Control-Allow-Origin' 'https://10.91.41.16' always;
-            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
-            add_header 'Access-Control-Allow-Headers' 'Origin, Content-Type, Accept, Authorization' always;
-            add_header 'Access-Control-Max-Age' 1728000;
-            add_header 'Content-Length' 0;
-            add_header 'Content-Type' 'text/plain charset=UTF-8';
-            return 204;
-        }
-    }
-
     # SPA fallback for React routes
     location / {
         try_files $uri /index.html;
     }
 }
 
-# Redirect HTTP to HTTPS for both domain & IP
+# Redirect HTTP to HTTPS
 server {
     listen 80;
     server_name uat-ers.religare.in 10.91.41.16;
